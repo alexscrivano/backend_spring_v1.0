@@ -44,19 +44,20 @@ public class AdminServices {
     public Shelf addShelf(Shelf shelf) throws Exception {
         return shelfRepo.save(shelf);
     }
-    public void deleteLoan(BookLoan loan){
-        loanRepo.delete(loan);
-    }
-    public void deleteLoan(User user, long num_loan){
-        List<BookLoan> loans = loanRepo.findByUser(user);
-        for(BookLoan loan : loans) {
-            if(loan.getNumLoan() == num_loan) {
-                loanRepo.delete(loan);
+
+    public BookLoan deleteLoan(Long num_loan) throws Exception {
+        if(loanRepo.existsById(num_loan)){
+            BookLoan bookLoan = loanRepo.findById(num_loan).get();
+            List<Book> books = bookLoan.getBooks();
+            if(books.isEmpty()) throw new Exception("Problema con la cancellazione del prestito");
+            for(Book book : books){
+                Book dbBook = bookRepo.findByISBN(book.getISBN());
+                dbBook.setCopies(dbBook.getCopies() + 1);
             }
-        }
+            loanRepo.deleteById(num_loan);
+            return bookLoan;
+        }else throw new Exception("Prestito numero " + num_loan + " non trovato");
+
     }
-    public void deleteLoan(long num_loan){
-        BookLoan loan = loanRepo.findByNumLoan(num_loan);
-        deleteLoan(loan);
-    }
+
 }
