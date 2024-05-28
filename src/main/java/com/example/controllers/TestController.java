@@ -57,6 +57,10 @@ public class TestController {
     public ResponseEntity<?> bookByISBN(@RequestParam String isbn) {
         return new ResponseEntity<>(bookRepo.findByISBN(isbn), HttpStatus.OK);
     }
+    @GetMapping("/loans")
+    public ResponseEntity<?> allLoans() {
+        return new ResponseEntity<>(loanRepo.findAll(), HttpStatus.OK);
+    }
 
     @PostMapping("/admin/addBook-{shelf}")
     public ResponseEntity<?> addBook(@PathVariable long shelf, @RequestBody Book book) {
@@ -86,6 +90,7 @@ public class TestController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+   /*
     @PostMapping("/loans/makeALoan")
     public ResponseEntity<?> makeALoan(@RequestParam String email, @RequestParam String isbn){
         try{
@@ -95,7 +100,7 @@ public class TestController {
         }catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-    }
+    }*/
     @PostMapping("/loans/makeALoan1")
     public ResponseEntity<?> makeABookLoan(@RequestBody LoanInfo infos){
         try{
@@ -113,19 +118,13 @@ public class TestController {
         }
     }
 
-    @DeleteMapping("/admin/deleteLoan1")
-    public ResponseEntity<?> deleteLoan1(@RequestBody BookLoan bookLoan) {
-        adminServices.deleteLoan(bookLoan);
-        return new ResponseEntity<>("Prestito: " + bookLoan.getNumLoan() + " cancellato", HttpStatus.OK);
-    }
-    @DeleteMapping("/admin/deleteLoan2")
-    public ResponseEntity<?> deleteLoan2(@RequestBody User user, long num_loan) {
-        adminServices.deleteLoan(user, num_loan);
-        return new ResponseEntity<>("Prestito: " + num_loan + " cancellato", HttpStatus.OK);
-    }
-    @DeleteMapping("/admin/deleteLoan3")
-    public ResponseEntity<?> deleteLoan3(@RequestBody long num_loan) {
-        adminServices.deleteLoan(num_loan);
-        return new ResponseEntity<>("Prestito: " + num_loan + " cancellato", HttpStatus.OK);
+    @DeleteMapping("/admin/deleteLoan")
+    public ResponseEntity<?> deleteLoan(@RequestParam Long num_loan){
+        try {
+            BookLoan b = adminServices.deleteLoan(num_loan);
+            return new ResponseEntity<>(b, HttpStatus.OK);
+        }catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }

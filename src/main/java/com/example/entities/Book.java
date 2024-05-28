@@ -1,6 +1,7 @@
 package com.example.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,7 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(name = "ISBN")
+    @Column(name = "ISBN", unique = true)
     private String ISBN;
 
     @Column(name = "title")
@@ -31,6 +32,7 @@ public class Book {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     Shelf shelf;
+
 
     public Book() {}
     public Book(Book b){
