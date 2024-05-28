@@ -1,5 +1,6 @@
 package com.example.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class BookLoan {
     private long numLoan;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     User user;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ISBN")

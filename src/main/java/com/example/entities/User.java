@@ -1,5 +1,6 @@
 package com.example.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +29,7 @@ public class User {
     private String address;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "numLoan")
+    @JsonManagedReference
     private List<BookLoan> loanList = new ArrayList<>();
 
     public void addLoan(BookLoan loan) {

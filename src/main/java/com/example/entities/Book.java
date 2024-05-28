@@ -32,4 +32,16 @@ public class Book {
     @JsonBackReference
     Shelf shelf;
 
+    public Book() {}
+    public Book(Book b){
+        this.id = b.id;
+        this.ISBN = b.getISBN();
+        this.title = b.getTitle();
+        this.author = b.getAuthor();
+        this.genre = b.getGenre();
+        this.editor = b.getEditor();
+        this.copies = b.getCopies();
+        this.shelf = b.getShelf();
+    }
+
 }
