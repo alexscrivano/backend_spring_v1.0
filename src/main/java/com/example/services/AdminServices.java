@@ -38,7 +38,7 @@ public class AdminServices {
         }
     }
     public User addUser(User user) throws Exception {
-        if(userRepo.findByEmail(user.getEmail())!=null){ return userRepo.save(user);}
+        if(!userRepo.existsByEmail(user.getEmail())){ return userRepo.save(user);}
         else throw new Exception("Problema nell'inserimento dell'utente: " + user.getName() + user.getSurname());
     }
     public Shelf addShelf(Shelf shelf) throws Exception {

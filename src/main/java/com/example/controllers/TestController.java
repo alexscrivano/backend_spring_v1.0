@@ -7,15 +7,23 @@ import com.example.entities.User;
 import com.example.repositories.BookRepo;
 import com.example.repositories.LoanRepo;
 import com.example.repositories.ShelfRepo;
+import com.example.repositories.UserRepo;
 import com.example.services.AdminServices;
+import com.example.services.UserServices;
+import com.example.utils.LoanInfo;
 import jakarta.websocket.server.PathParam;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/test")
@@ -28,6 +36,10 @@ public class TestController {
     ShelfRepo shelfRepo;
     @Autowired
     AdminServices adminServices;
+    @Autowired
+    UserServices userServices;
+    @Autowired
+    private UserRepo userRepo;
 
     @GetMapping("/books")
     public ResponseEntity<?> allBooks() {
@@ -49,6 +61,10 @@ public class TestController {
         }catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+    @GetMapping("/bookByISBN")
+    public ResponseEntity<?> bookByISBN(@RequestParam String isbn) {
+        return new ResponseEntity<>(bookRepo.findByISBN(isbn), HttpStatus.OK);
     }
     @PostMapping("/admin/addUser")
     public ResponseEntity<?> addUser(@RequestBody User user) {
@@ -101,4 +117,35 @@ public class TestController {
         BookLoan added = loanRepo.save(loan);
         return new ResponseEntity<>(added, HttpStatus.OK);
     }
+
+    @PostMapping("/loans/makeAloan")
+    public ResponseEntity<?> makeALoan(@RequestBody LoanInfo infos){
+        try{
+            //User u = userRepo.findByEmail(infos.getUserEmail());
+            Optional<User> u1 = userRepo.findById(infos.getId());
+            Book book = bookRepo.findByISBN(infos.getSingleISBN());
+            BookLoan b = userServices.makeAsingleLoan(u1.get(),book);
+            u1.get().addLoan(b);
+            return new ResponseEntity<>(b, HttpStatus.OK);
+        }catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/loans/makeAbookLoan")
+    public ResponseEntity<?> makeABookLoan(@RequestBody LoanInfo infos){
+        try{
+            User u = userRepo.findByEmail(infos.getUserEmail());
+            List<Book> books = new ArrayList<>();
+            for(String s : infos.getISBNlist()){
+                Book b = bookRepo.findByISBN(s);
+                books.add(b);
+            }
+            BookLoan b = userServices.makeALoan(u,books);
+            u.addLoan(b);
+            return new ResponseEntity<>(b, HttpStatus.OK);
+        }catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -27,5 +28,10 @@ public class User {
     private String address;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "numLoan")
-    private List<BookLoan> loanList;
+    private List<BookLoan> loanList = new ArrayList<>();
+
+    public void addLoan(BookLoan loan) {
+        loanList.add(loan);
+        loan.setUser(this);
+    }
 }

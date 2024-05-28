@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -19,5 +20,5 @@ public class BookLoan {
     User user;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ISBN")
-    List<Book> books;
+    List<Book> books = new ArrayList<>();
 }
