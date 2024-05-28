@@ -12,8 +12,6 @@ import com.example.repositories.ShelfRepo;
 import com.example.repositories.UserRepo;
 import com.example.utils.LoanInfo;
 import jakarta.persistence.LockModeType;
-import org.hibernate.annotations.OptimisticLockType;
-import org.hibernate.annotations.OptimisticLocking;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
@@ -33,7 +31,7 @@ public class UserServices {
     @Autowired
     ShelfRepo shelfRepository;
 
-    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     @Lock(LockModeType.OPTIMISTIC)
     public BookLoan makeAsingleLoan(LoanInfo infos) throws Exception{
         if(userRepository.existsByEmail(infos.getUserEmail())){
@@ -59,7 +57,6 @@ public class UserServices {
             if(books != null){
                 for(Book book : books){
                     if(!bookRepository.existsByISBN(book.getISBN())) throw new BookNotInLibraryException("Libro " + book.getISBN() + " non trovato");
-                    if(book == null) throw new BookNotInLibraryException("Libro " + book.getISBN() + " non trovato");
                     if(book.getCopies() <= 0){throw new NoCopiesException("Non ci sono copie disponibili del libro: " + book.getTitle());}
                     int copies = book.getCopies() - 1;
                     book.setCopies(copies);
