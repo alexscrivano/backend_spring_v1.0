@@ -33,19 +33,6 @@ public class UserServices {
     @Autowired
     ShelfRepo shelfRepository;
 
-    //Loans
-    /*@Transactional(readOnly = false, rollbackFor = Exception.class)
-    @Lock(LockModeType.OPTIMISTIC)
-    public BookLoan makeAsingleLoan(User user, Book book) throws Exception {
-        if(userRepository.existsByEmail(user.getEmail())) {
-            if(book.getCopies() > 0){
-                BookLoan bookLoan = new BookLoan();
-                bookLoan.setUser(user);
-                List<Book> books = List.of(book);
-                return loanRepository.save(bookLoan);
-            }else throw new Exception("Non ci sono copie disponibili");
-        }else throw new Exception("Problema nella prenotazione del libro: " + book.getTitle());
-    }*/
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     @Lock(LockModeType.OPTIMISTIC)
     public BookLoan makeAsingleLoan(LoanInfo infos) throws Exception{
@@ -64,6 +51,7 @@ public class UserServices {
             }else throw new BookNotInLibraryException("Libro: " + infos.getBook_isbn() + " non presente nella biblioteca");
         }else throw new UserNotFoundException("Utente: " + infos.getUserEmail() + " non trovato");
     }
+
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     @Lock(LockModeType.OPTIMISTIC)
     public BookLoan makeALoan(User user, List<Book> books) throws Exception {
