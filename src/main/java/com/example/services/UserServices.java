@@ -50,7 +50,7 @@ public class UserServices {
         }else throw new UserNotFoundException("Utente: " + infos.getUserEmail() + " non trovato");
     }
 
-    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     @Lock(LockModeType.OPTIMISTIC)
     public BookLoan makeALoan(User user, List<Book> books) throws Exception {
         if(userRepository.existsByEmail(user.getEmail())){
