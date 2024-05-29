@@ -15,6 +15,8 @@ import jakarta.persistence.LockModeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ public class UserServices {
     @Autowired
     ShelfRepo shelfRepository;
 
-    @Transactional(rollbackFor = {Exception.class,NoCopiesException.class,UserNotFoundException.class,BookNotInLibraryException.class})
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class,NoCopiesException.class,UserNotFoundException.class,BookNotInLibraryException.class})
     @Lock(LockModeType.OPTIMISTIC)
     public BookLoan makeALoan(User user, List<Book> books) throws Exception {
         if(userRepository.existsByEmail(user.getEmail())){
@@ -42,25 +44,13 @@ public class UserServices {
                     int copies = book.getCopies() - 1;
                     book.setCopies(copies);
                 }
-                System.out.println(books);
-                BookLoan loan = createLoan(user,books);
-                return loanRepository.save(loan);
+                BookLoan b = new BookLoan();
+                b.setBooks(books);
+                b.setUser(user);
+                userRepository.save(user);
+                return loanRepository.save(b);
             }else throw new Exception("Problema con i libri che hai richiesto");
         }else throw new UserNotFoundException("Utente: " + user.getEmail() + " non trovato");
     }
 
-    private BookLoan createLoan(User user, List<Book> books){
-        BookLoan bookLoan = new BookLoan();
-        bookLoan.setUser(user);
-        user.getLoanList().add(bookLoan);
-        userRepository.save(user);
-        List<Book> books1 = new ArrayList<>();
-        for(Book book : books){
-            Book b = new Book(book);
-            b.setCopies(1);
-            books1.add(b);
-        }
-        bookLoan.setBooks(books1);
-        return bookLoan;
-    }
 }

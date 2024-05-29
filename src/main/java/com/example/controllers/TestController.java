@@ -20,10 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/test")
@@ -100,6 +97,7 @@ public class TestController {
         try{
             User u = userRepo.findByEmail(infos.getUserEmail());
             List<Book> books = new ArrayList<>();
+            System.out.println(Arrays.toString(infos.getIsbn_list()));
             for(String s : infos.getIsbn_list()){
                 Book b = bookRepo.findByISBN(s);
                 books.add(b);

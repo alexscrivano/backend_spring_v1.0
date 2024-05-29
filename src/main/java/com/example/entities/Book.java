@@ -27,6 +27,7 @@ public class Book {
     @Column(name = "editor_name")
     private String editor;
     @Column(name = "copies")
+    @JsonIgnore
     private int copies;
 
     @ManyToOne(fetch = FetchType.LAZY)
