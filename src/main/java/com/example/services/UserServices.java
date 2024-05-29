@@ -33,25 +33,6 @@ public class UserServices {
 
     @Transactional(rollbackFor = {Exception.class,NoCopiesException.class,UserNotFoundException.class,BookNotInLibraryException.class})
     @Lock(LockModeType.OPTIMISTIC)
-    public BookLoan makeAsingleLoan(LoanInfo infos) throws Exception{
-        if(userRepository.existsByEmail(infos.getUserEmail())){
-            if(bookRepository.existsByISBN(infos.getBook_isbn())){
-                User user = userRepository.findByEmail(infos.getUserEmail());
-                Book book = bookRepository.findByISBN(infos.getBook_isbn());
-                if(book != null){
-                    if(book.getCopies() > 0){
-                        BookLoan loan = createLoan(book,user);
-                        int copies = book.getCopies() - 1;
-                        book.setCopies(copies);
-                        return loanRepository.save(loan);
-                    }else throw new NoCopiesException("Non ci sono copie disponibili del libro: " + book.getTitle());
-                }else throw new BookNotInLibraryException("Libro: " + infos.getBook_isbn() + " non trovato");
-            }else throw new BookNotInLibraryException("Libro: " + infos.getBook_isbn() + " non presente nella biblioteca");
-        }else throw new UserNotFoundException("Utente: " + infos.getUserEmail() + " non trovato");
-    }
-
-    @Transactional(rollbackFor = {Exception.class,NoCopiesException.class,UserNotFoundException.class,BookNotInLibraryException.class})
-    @Lock(LockModeType.OPTIMISTIC)
     public BookLoan makeALoan(User user, List<Book> books) throws Exception {
         if(userRepository.existsByEmail(user.getEmail())){
             if(books != null){
@@ -61,26 +42,20 @@ public class UserServices {
                     int copies = book.getCopies() - 1;
                     book.setCopies(copies);
                 }
+                System.out.println(books);
                 BookLoan loan = createLoan(user,books);
                 return loanRepository.save(loan);
             }else throw new Exception("Problema con i libri che hai richiesto");
         }else throw new UserNotFoundException("Utente: " + user.getEmail() + " non trovato");
     }
 
-    private BookLoan createLoan(Book book, User user){
-        BookLoan bookLoan = new BookLoan();
-        bookLoan.setUser(user);
-        Book b = new Book(book);
-        b.setCopies(1);
-        bookLoan.setBooks(List.of(book));
-        return bookLoan;
-    }
     private BookLoan createLoan(User user, List<Book> books){
         BookLoan bookLoan = new BookLoan();
         bookLoan.setUser(user);
-        List<Book> copy = List.copyOf(books);
+        user.getLoanList().add(bookLoan);
+        userRepository.save(user);
         List<Book> books1 = new ArrayList<>();
-        for(Book book : copy){
+        for(Book book : books){
             Book b = new Book(book);
             b.setCopies(1);
             books1.add(b);

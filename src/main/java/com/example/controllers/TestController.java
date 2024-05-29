@@ -57,9 +57,13 @@ public class TestController {
     public ResponseEntity<?> bookByISBN(@RequestParam String isbn) {
         return new ResponseEntity<>(bookRepo.findByISBN(isbn), HttpStatus.OK);
     }
-    @GetMapping("/loans")
+    @GetMapping("/allLoans")
     public ResponseEntity<?> allLoans() {
-        return new ResponseEntity<>(loanRepo.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(adminServices.allPrestiti(), HttpStatus.OK);
+    }
+    @GetMapping("/users")
+    public ResponseEntity<?> allUsers() {
+        return new ResponseEntity<>(userRepo.findAll(), HttpStatus.OK);
     }
 
     @PostMapping("/admin/addBook-{shelf}")
@@ -90,17 +94,7 @@ public class TestController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-   /*
-    @PostMapping("/loans/makeALoan")
-    public ResponseEntity<?> makeALoan(@RequestParam String email, @RequestParam String isbn){
-        try{
-            LoanInfo infos = new LoanInfo(email,isbn);
-            BookLoan b = userServices.makeAsingleLoan(infos);
-            return new ResponseEntity<>(b, HttpStatus.OK);
-        }catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }*/
+
     @PostMapping("/loans/makeALoan1")
     public ResponseEntity<?> makeABookLoan(@RequestBody LoanInfo infos){
         try{
@@ -111,7 +105,6 @@ public class TestController {
                 books.add(b);
             }
             BookLoan b = userServices.makeALoan(u,books);
-            u.addLoan(b);
             return new ResponseEntity<>(b, HttpStatus.OK);
         }catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

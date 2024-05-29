@@ -1,5 +1,6 @@
 package com.example.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,12 +29,8 @@ public class User {
     @Column(name = "address")
     private String address;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "numLoan")
-    @JsonManagedReference
-    private List<BookLoan> loanList = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.MERGE)
+    @JsonBackReference
+    List<BookLoan> loanList = new ArrayList<>();
 
-    public void addLoan(BookLoan loan) {
-        loanList.add(loan);
-        loan.setUser(this);
-    }
 }

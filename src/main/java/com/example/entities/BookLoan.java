@@ -26,7 +26,8 @@ public class BookLoan {
     private Date date;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JoinColumn(name = "user_id")
+    @JsonManagedReference
     User user;
 
     @ManyToMany(fetch = FetchType.LAZY)

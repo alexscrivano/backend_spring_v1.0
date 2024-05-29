@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AdminServices {
@@ -58,6 +60,14 @@ public class AdminServices {
             return bookLoan;
         }else throw new Exception("Prestito numero " + num_loan + " non trovato");
 
+    }
+
+    public Map<String,List<BookLoan>> allPrestiti(){
+        Map<String,List<BookLoan>> prestiti = new HashMap<>();
+        for(User user : userRepo.findAll()){
+            prestiti.putIfAbsent(user.getEmail(), user.getLoanList());
+        }
+        return prestiti;
     }
 
 }
