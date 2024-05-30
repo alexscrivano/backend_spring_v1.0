@@ -107,21 +107,12 @@ public class TestController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    @PostMapping("/admin/returned")
-    public ResponseEntity<?> returnBook(@RequestParam Long num_loan){
-        try{
-            adminServices.returned(num_loan);
-            return new ResponseEntity<>("Prestito restituito",HttpStatus.OK);
-        }catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
 
     @DeleteMapping("/admin/deleteLoan")
     public ResponseEntity<?> deleteLoan(@RequestParam Long num_loan){
         try {
-            BookLoan b = adminServices.deleteLoan(num_loan);
-            return new ResponseEntity<>(b, HttpStatus.OK);
+            adminServices.deleteLoan(num_loan);
+            return new ResponseEntity<>("Prestito restituito/annullato", HttpStatus.OK);
         }catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

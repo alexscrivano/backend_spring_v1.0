@@ -16,6 +16,8 @@ import java.util.List;
 @Entity
 @Table(name = "loans",schema = "library")
 public class BookLoan {
+    final int DAY = 1000 * 60 * 60 * 24;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long numLoan;
@@ -24,6 +26,13 @@ public class BookLoan {
     @Column(name = "date")
     @Temporal(TemporalType.DATE)
     private Date date;
+
+    @Column(name = "returnDate")
+    @Temporal(TemporalType.DATE)
+    private Date dateReturn = new Date(this.date.getTime() +  DAY*7);
+
+    @Column(name = "returned")
+    private boolean returned;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

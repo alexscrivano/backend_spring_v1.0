@@ -10,11 +10,10 @@ import com.example.repositories.ShelfRepo;
 import com.example.repositories.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class AdminServices {
@@ -47,17 +46,16 @@ public class AdminServices {
         return shelfRepo.save(shelf);
     }
 
-    public BookLoan deleteLoan(Long num_loan) throws Exception {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void deleteLoan(Long num_loan) throws Exception {
         if(loanRepo.existsById(num_loan)){
-            BookLoan bookLoan = loanRepo.findById(num_loan).get();
-            List<Book> books = bookLoan.getBooks();
-            if(books.isEmpty()) throw new Exception("Problema con la cancellazione del prestito");
+            BookLoan loan = loanRepo.findById(num_loan).get();
+            if(loan.getDateReturn().before(new Date())) throw new Exception("Prestito scaduto");
+            List<Book> books = loan.getBooks();
             for(Book book : books){
-                Book dbBook = bookRepo.findByISBN(book.getISBN());
-                dbBook.setCopies(dbBook.getCopies() + 1);
+                book.setCopies(book.getCopies() + 1);
             }
-            loanRepo.deleteById(num_loan);
-            return bookLoan;
+            loanRepo.delete(loan);
         }else throw new Exception("Prestito numero " + num_loan + " non trovato");
 
     }
@@ -70,9 +68,5 @@ public class AdminServices {
         return prestiti;
     }
 
-    public void returned(Long num_loan) throws Exception {
-        if(!loanRepo.existsById(num_loan)) throw new Exception("Prestito non trovato");
-        loanRepo.deleteById(num_loan);
-    }
 
 }
