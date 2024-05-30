@@ -12,4 +12,6 @@ public interface LoanRepo extends JpaRepository<BookLoan,Long> {
 
     List<BookLoan> findByBooksContains(Book book);
     List<BookLoan> findByUser(User user);
+
+    boolean existsByNumLoan(long num_loan);
 }

@@ -72,9 +72,7 @@ public class AdminServices {
 
     public void returned(Long num_loan) throws Exception {
         if(!loanRepo.existsById(num_loan)) throw new Exception("Prestito non trovato");
-        BookLoan bookLoan = loanRepo.findById(num_loan).get();
-        bookLoan.setReturned(true);
-        loanRepo.save(bookLoan);
+        loanRepo.deleteById(num_loan);
     }
 
 }
