@@ -1,6 +1,7 @@
 package com.example.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -30,7 +31,7 @@ public class User {
     private String address;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.MERGE)
-    @JsonBackReference
+    @JsonIgnore
     List<BookLoan> loanList = new ArrayList<>();
 
 }

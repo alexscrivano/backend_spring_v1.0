@@ -62,6 +62,10 @@ public class TestController {
     public ResponseEntity<?> allUsers() {
         return new ResponseEntity<>(userRepo.findAll(), HttpStatus.OK);
     }
+    @GetMapping("/loanUser")
+    public ResponseEntity<?> loanUser(@RequestParam String email) {
+        return new ResponseEntity<>(adminServices.prestitiByUserEmail(email), HttpStatus.OK);
+    }
 
     @PostMapping("/admin/addBook-{shelf}")
     public ResponseEntity<?> addBook(@PathVariable long shelf, @RequestBody Book book) {
@@ -108,6 +112,16 @@ public class TestController {
         }
     }
 
+
+    @DeleteMapping("/user/annulla")
+    public ResponseEntity<?> annulla(@RequestParam Long num){
+        try{
+            userServices.annullaPrestito(num);
+            return new ResponseEntity<>("Il prestito " + num + " é stato annullato",HttpStatus.OK);
+        }catch (Exception e) {
+            return new ResponseEntity<>("Impossibile annullare il prestito: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
     @DeleteMapping("/admin/deleteLoan")
     public ResponseEntity<?> deleteLoan(@RequestParam Long num_loan){
         try {

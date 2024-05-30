@@ -4,10 +4,12 @@ import com.example.entities.Book;
 import com.example.entities.BookLoan;
 import com.example.entities.Shelf;
 import com.example.entities.User;
+import com.example.exceptions.UserAlreadyExistsException;
 import com.example.repositories.BookRepo;
 import com.example.repositories.LoanRepo;
 import com.example.repositories.ShelfRepo;
 import com.example.repositories.UserRepo;
+import com.example.utils.LoanDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -39,7 +41,10 @@ public class AdminServices {
         }
     }
     public User addUser(User user) throws Exception {
-        if(!userRepo.existsByEmail(user.getEmail())){ return userRepo.save(user);}
+        if(!userRepo.existsByEmail(user.getEmail())){
+            if(userRepo.existsByPhoneNumber(user.getPhoneNumber())) throw new UserAlreadyExistsException("Il numero che stai usando é già usato da un'altro utente");
+            return userRepo.save(user);
+        }
         else throw new Exception("Problema nell'inserimento dell'utente: " + user.getName() + user.getSurname());
     }
     public Shelf addShelf(Shelf shelf) throws Exception {
@@ -60,11 +65,35 @@ public class AdminServices {
 
     }
 
-    public Map<String,List<BookLoan>> allPrestiti(){
-        Map<String,List<BookLoan>> prestiti = new HashMap<>();
+    public Map<String,List<LoanDTO>> allPrestiti(){
+        Map<String,List<LoanDTO>> prestiti = new HashMap<>();
         for(User user : userRepo.findAll()){
-            prestiti.putIfAbsent(user.getEmail(), user.getLoanList());
+            List<LoanDTO> list = new ArrayList<>();
+            for(BookLoan loan : user.getLoanList()){
+                LoanDTO dto = new LoanDTO();
+                dto.setNum_loan(loan.getNumLoan());
+                dto.setDate(loan.getDate());
+                dto.setReturnDate(loan.getDateReturn());
+                dto.setBooks(loan.getBooks());
+                list.add(dto);
+            }
+            prestiti.putIfAbsent(user.getEmail(), list);
         }
+        return prestiti;
+    }
+    public Map<String,List<LoanDTO>> prestitiByUserEmail(String email){
+        Map<String,List<LoanDTO>> prestiti = new HashMap<>();
+        User u = userRepo.findByEmail(email);
+        List<LoanDTO> list = new ArrayList<>();
+        for(BookLoan loan : u.getLoanList()){
+            LoanDTO dto = new LoanDTO();
+            dto.setNum_loan(loan.getNumLoan());
+            dto.setDate(loan.getDate());
+            dto.setReturnDate(loan.getDateReturn());
+            dto.setBooks(loan.getBooks());
+            list.add(dto);
+        }
+        prestiti.putIfAbsent(u.getEmail(), list);
         return prestiti;
     }
 

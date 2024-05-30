@@ -1,6 +1,7 @@
 package com.example.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -29,11 +30,11 @@ public class BookLoan {
 
     @Column(name = "returnDate")
     @Temporal(TemporalType.DATE)
-    private Date dateReturn = new Date(this.date.getTime() +  DAY*7);
+    private Date dateReturn;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonManagedReference
+    @JsonIgnore
     User user;
 
     @ManyToMany(fetch = FetchType.LAZY)

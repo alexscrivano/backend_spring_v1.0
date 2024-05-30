@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -47,10 +49,23 @@ public class UserServices {
                 BookLoan b = new BookLoan();
                 b.setBooks(books);
                 b.setUser(user);
+                Calendar c = Calendar.getInstance();
+                c.setTime(new Date());
+                c.add(Calendar.DAY_OF_MONTH, 7);
+                Date returnDate = c.getTime();
+                b.setDateReturn(returnDate);
                 userRepository.save(user);
                 return loanRepository.save(b);
             }else throw new Exception("Problema con i libri che hai richiesto");
         }else throw new UserNotFoundException("Utente: " + user.getEmail() + " non trovato");
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void annullaPrestito(Long num) throws Exception{
+        if(!loanRepository.existsById(num)) throw new Exception("Prestito " + num + " non trovato");
+        BookLoan b = loanRepository.findById(num).get();
+        if(b.getDateReturn().before(new Date())) throw new Exception("Prestito " + num + " scaduto, non annullabile");
+        loanRepository.delete(b);
     }
 
 }
