@@ -25,6 +25,9 @@ public class BookLoan {
     @Temporal(TemporalType.DATE)
     private Date date;
 
+    @Column(name = "returned")
+    private boolean returned;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonManagedReference

@@ -91,7 +91,6 @@ public class TestController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
     @PostMapping("/loans/makeALoan1")
     public ResponseEntity<?> makeABookLoan(@RequestBody LoanInfo infos){
         try{
@@ -104,6 +103,15 @@ public class TestController {
             }
             BookLoan b = userServices.makeALoan(u,books);
             return new ResponseEntity<>(b, HttpStatus.OK);
+        }catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/admin/returned")
+    public ResponseEntity<?> returnBook(@RequestParam Long num_loan){
+        try{
+            adminServices.returned(num_loan);
+            return new ResponseEntity<>("Prestito restituito",HttpStatus.OK);
         }catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
