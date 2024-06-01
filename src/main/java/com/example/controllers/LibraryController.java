@@ -13,7 +13,6 @@ import com.example.services.CommonServices;
 import com.example.services.UserServices;
 import com.example.utils.LoanInfo;
 import com.example.utils.UsersUtils;
-import org.keycloak.authorization.client.util.Http;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/library")
+@CrossOrigin("*")
 public class LibraryController {
     @Autowired
     AdminServices adminServices;
