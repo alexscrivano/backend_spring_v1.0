@@ -1,5 +1,6 @@
 package com.example.utils;
 import com.example.entities.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,6 +9,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -16,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Component
 public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
     private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
@@ -29,7 +32,7 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
 
     private String getPrincipalClaim(Jwt token) {
         String claimName = JwtClaimNames.SUB;
-        claimName = principalAttributeName;
+        if(principalAttributeName != null) claimName = principalAttributeName;
         return token.getClaim(claimName);
     }
 
@@ -43,11 +46,14 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
             return Set.of();
         }
         resAccess = source.getClaim("resource_access");
-        if(resAccess.get("test-client") == null) {
+        if(resAccess.get("client_1") == null) {
             return Set.of();
         }
         resource = (Map<String,Object>) resAccess.get("client_1");
         roles = (Collection<String>) resource.get("roles");
+        for(String role : roles) {
+            System.out.println(role);
+        }
         return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role)).collect(Collectors.toList());
     }
 

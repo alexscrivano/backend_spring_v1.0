@@ -16,9 +16,8 @@ public class UserAuthService {
     UsersUtils utils = new UsersUtils();
 
     @Transactional
-    public User sync() throws Exception{
+    public User sync(){
         User user = utils.getUser();
-        if(!userRepo.existsByEmail(user.getEmail())) return userRepo.save(user);
-        else throw new UserNotFoundException("Utente non trovato");
+        return userRepo.save(user);
     }
 }
