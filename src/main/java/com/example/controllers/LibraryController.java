@@ -5,12 +5,14 @@ import com.example.entities.BookLoan;
 import com.example.entities.Shelf;
 import com.example.entities.User;
 import com.example.exceptions.BookNotInLibraryException;
+import com.example.repositories.BookRepo;
 import com.example.repositories.UserRepo;
 import com.example.services.AdminServices;
 import com.example.services.BooksServices;
 import com.example.services.CommonServices;
 import com.example.services.UserServices;
 import com.example.utils.LoanInfo;
+import com.example.utils.UsersUtils;
 import org.keycloak.authorization.client.util.Http;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,6 +34,12 @@ public class LibraryController {
     BooksServices bookServices;
     @Autowired
     CommonServices commonServices;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private BookRepo bookRepo;
+    @Autowired
+    private UsersUtils usersUtils;
 
     /*GET REQUESTS
         - Admin requests ()
@@ -178,7 +187,14 @@ public class LibraryController {
     @PreAuthorize("hasRole('user')")
     public ResponseEntity<?> requestALoan(@RequestBody LoanInfo info){
         try{
-            BookLoan b = userServices.makeALoan(info);
+            if(!usersUtils.verifyToken(info.getUserEmail())) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            User u = userRepo.findByEmail(info.getUserEmail());
+            List<Book> books = new ArrayList<>();
+            for(String s : info.getIsbn_list()){
+                Book b = bookRepo.findByISBN(s);
+                books.add(b);
+            }
+            BookLoan b = userServices.makeALoan(u,books);
             return new ResponseEntity<>(b, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

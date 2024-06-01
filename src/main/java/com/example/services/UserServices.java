@@ -36,14 +36,8 @@ public class UserServices {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class,NoCopiesException.class,UserNotFoundException.class,BookNotInLibraryException.class})
     @Lock(LockModeType.OPTIMISTIC)
-    public BookLoan makeALoan(LoanInfo info) throws Exception {
-        User user = userRepository.findByEmail(info.getUserEmail());
-        List<Book> books = new ArrayList<>();
-        for(String isbn : info.getIsbn_list()){
-            Book b = bookRepository.findByISBN(isbn);
-            books.add(b);
-        }
-        if(userRepository.existsByEmail(user.getEmail())){
+    public BookLoan makeALoan(User user, List<Book> books) throws Exception {
+        if(user != null && userRepository.existsByEmail(user.getEmail())){
             if(books != null){
                 for(Book book : books){
                     if(!bookRepository.existsByISBN(book.getISBN())) throw new BookNotInLibraryException("Libro " + book.getISBN() + " non trovato");
