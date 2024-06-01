@@ -64,38 +64,4 @@ public class AdminServices {
         }else throw new Exception("Prestito numero " + num_loan + " non trovato");
 
     }
-
-    public Map<String,List<LoanDTO>> allPrestiti(){
-        Map<String,List<LoanDTO>> prestiti = new HashMap<>();
-        for(User user : userRepo.findAll()){
-            List<LoanDTO> list = new ArrayList<>();
-            for(BookLoan loan : user.getLoanList()){
-                LoanDTO dto = new LoanDTO();
-                dto.setNum_loan(loan.getNumLoan());
-                dto.setDate(loan.getDate());
-                dto.setReturnDate(loan.getDateReturn());
-                dto.setBooks(loan.getBooks());
-                list.add(dto);
-            }
-            prestiti.putIfAbsent(user.getEmail(), list);
-        }
-        return prestiti;
-    }
-    public Map<String,List<LoanDTO>> prestitiByUserEmail(String email){
-        Map<String,List<LoanDTO>> prestiti = new HashMap<>();
-        User u = userRepo.findByEmail(email);
-        List<LoanDTO> list = new ArrayList<>();
-        for(BookLoan loan : u.getLoanList()){
-            LoanDTO dto = new LoanDTO();
-            dto.setNum_loan(loan.getNumLoan());
-            dto.setDate(loan.getDate());
-            dto.setReturnDate(loan.getDateReturn());
-            dto.setBooks(loan.getBooks());
-            list.add(dto);
-        }
-        prestiti.putIfAbsent(u.getEmail(), list);
-        return prestiti;
-    }
-
-
 }
