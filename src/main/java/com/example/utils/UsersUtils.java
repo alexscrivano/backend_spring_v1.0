@@ -6,6 +6,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 public class UsersUtils {
 
@@ -20,7 +22,6 @@ public class UsersUtils {
         usertosync.setSurname(jwtToken.getClaimAsString("family_name"));
         usertosync.setPhoneNumber(jwtToken.getClaimAsString("phone_number"));
         usertosync.setAddress(jwtToken.getClaimAsString("address"));
-
         return usertosync;
     }
 }
