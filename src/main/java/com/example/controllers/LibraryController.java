@@ -15,6 +15,7 @@ import com.example.utils.LoanInfo;
 import com.example.utils.UsersUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/library")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class LibraryController {
     @Autowired
     AdminServices adminServices;
@@ -135,6 +136,7 @@ public class LibraryController {
     public ResponseEntity<?> getAllLoans() {
         try{
             return new ResponseEntity<>(commonServices.allLoans(), HttpStatus.OK);
+            //return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(commonServices.allLoans());
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
@@ -205,11 +207,12 @@ public class LibraryController {
         - Admin requests (deleteLoan)
         - User requests ()
      */
-    @DeleteMapping("/admin/deleteLoan")
-    public ResponseEntity<?> deleteLoan(@RequestParam Long num_loan){
+    @DeleteMapping("/admin/returnLoan")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<?> returnLoan(@RequestParam Long num_loan){
         try{
             adminServices.deleteLoan(num_loan);
-            return new ResponseEntity<>("Prestito annullato", HttpStatus.OK);
+            return new ResponseEntity<>("Prestito restituito", HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>("Problema con l'annullamento del prestito: " + num_loan + ", " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

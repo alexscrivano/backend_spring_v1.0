@@ -55,7 +55,6 @@ public class AdminServices {
     public void deleteLoan(Long num_loan) throws Exception {
         if(loanRepo.existsById(num_loan)){
             BookLoan loan = loanRepo.findById(num_loan).get();
-            if(loan.getDateReturn().before(new Date())) throw new Exception("Prestito scaduto");
             List<Book> books = loan.getBooks();
             for(Book book : books){
                 book.setCopies(book.getCopies() + 1);
