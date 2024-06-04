@@ -12,7 +12,7 @@ import lombok.Setter;
 @Table(name = "books",schema = "library")
 public class Book {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "ISBN", unique = true)
@@ -29,6 +29,8 @@ public class Book {
     @Column(name = "copies")
     @JsonIgnore
     private int copies;
+    @Column(name = "description")
+    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference

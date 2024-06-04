@@ -197,6 +197,7 @@ public class LibraryController {
             if(!usersUtils.verifyToken(info.getUserEmail())) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             User u = userRepo.findByEmail(info.getUserEmail());
             List<Book> books = new ArrayList<>();
+            if(info.getIsbn_list().length == 0) return new ResponseEntity<>("Impossibile confermare un prestito vuoto",HttpStatus.BAD_REQUEST);
             for(String s : info.getIsbn_list()){
                 Book b = bookRepo.findByISBN(s);
                 books.add(b);
