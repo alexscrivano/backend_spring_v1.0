@@ -51,36 +51,41 @@ public class LibraryController {
     public ResponseEntity<?> getAllBooks() {
         return new ResponseEntity<>(bookServices.getAllBooks(), HttpStatus.OK);
     }
-    @GetMapping("/books/bookSearchISBN")
+    @GetMapping("/books/bookSearch")
     @PreAuthorize("hasAnyRole('user','admin')")
-    public ResponseEntity<?> getBookSearchISBN(@RequestParam String book_isbn) {
+    public ResponseEntity<?> getBookSearchISBN(@RequestParam String searchQuery, @RequestParam String search_type) {
         try{
-            Book book = bookServices.getBookByISBN(book_isbn);
-            return new ResponseEntity<>(book, HttpStatus.OK);
-        }catch (BookNotInLibraryException e){
+            List<Book> searchedBooks;
+            switch (search_type) {
+                case "ISBN": searchedBooks = List.of(bookRepo.findByISBN(searchQuery));
+                case "Author": searchedBooks = bookRepo.findByAuthorContaining(searchQuery);
+                default: searchedBooks = bookRepo.findByTitleContaining(searchQuery);
+            }
+            return new ResponseEntity<>(searchedBooks, HttpStatus.OK);
+        }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/books/bookSearchTitle")
-    @PreAuthorize("hasAnyRole('user','admin')")
-    public ResponseEntity<?> getBookSearchTitle(@RequestParam String book_title) {
-        try{
-            List<Book> books = bookServices.getBookByTitle(book_title);
-            return new ResponseEntity<>(books, HttpStatus.OK);
-        }catch (BookNotInLibraryException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }
-    @GetMapping("/books/bookSearchAuthor")
-    @PreAuthorize("hasAnyRole('user','admin')")
-    public ResponseEntity<?> getBookSearchAuthor(@RequestParam String book_author) {
-        try{
-            List<Book> books = bookServices.getBookByAuthor(book_author);
-            return new ResponseEntity<>(books, HttpStatus.OK);
-        }catch (BookNotInLibraryException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }
+//    @GetMapping("/books/bookSearchTitle")
+//    @PreAuthorize("hasAnyRole('user','admin')")
+//    public ResponseEntity<?> getBookSearchTitle(@RequestParam String book_title) {
+//        try{
+//            List<Book> books = bookServices.getBookByTitle(book_title);
+//            return new ResponseEntity<>(books, HttpStatus.OK);
+//        }catch (BookNotInLibraryException e){
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+//        }
+//    }
+//    @GetMapping("/books/bookSearchAuthor")
+//    @PreAuthorize("hasAnyRole('user','admin')")
+//    public ResponseEntity<?> getBookSearchAuthor(@RequestParam String book_author) {
+//        try{
+//            List<Book> books = bookServices.getBookByAuthor(book_author);
+//            return new ResponseEntity<>(books, HttpStatus.OK);
+//        }catch (BookNotInLibraryException e){
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+//        }
+//    }
     @GetMapping("/books/bookByTitleAndAuthor")
     @PreAuthorize("hasAnyRole('user','admin')")
     public ResponseEntity<?> getBookByTitleAndAuthor(@RequestParam String book_title, @RequestParam String author) {

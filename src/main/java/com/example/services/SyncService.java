@@ -15,8 +15,15 @@ public class SyncService {
     UsersUtils utils = new UsersUtils();
 
     @Transactional
-    public User sync(){
+    public void sync(){
         User user = utils.getUser();
-        return userRepo.save(user);
+        User toSync = userRepo.findByEmailOrPhoneNumberOrUsername(user.getEmail(),user.getPhoneNumber(),user.getUsername());
+        toSync.setUsername(user.getUsername());
+        toSync.setName(user.getName());
+        toSync.setSurname(user.getSurname());
+        toSync.setPhoneNumber(user.getPhoneNumber());
+        toSync.setEmail(user.getEmail());
+        toSync.setAddress(user.getAddress());
+        userRepo.save(toSync);
     }
 }

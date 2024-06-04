@@ -22,7 +22,7 @@ class DeleteLoans extends Thread{
     public void run() {
         try{
             while(true){
-                TimeUnit.DAYS.sleep(7);
+                TimeUnit.DAYS.sleep(1);
                 List<BookLoan> loans = loanRepo.findAll();
                 for(BookLoan loan : loans){
                     if(loan.getDateReturn().before(new Date())){
