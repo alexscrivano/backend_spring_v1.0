@@ -86,6 +86,18 @@ public class LibraryController {
 //            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 //        }
 //    }
+    @GetMapping("/books/findByISBN")
+    @PreAuthorize("hasAnyRole('user','admin')")
+    public ResponseEntity<?> getBookByISBN(@RequestParam String ISBN) {
+        try{
+            Book b = bookRepo.findByISBN(ISBN);
+            System.out.println("Libro trovato: " + b.getTitle());
+            return new ResponseEntity<>(b, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/books/bookByTitleAndAuthor")
     @PreAuthorize("hasAnyRole('user','admin')")
     public ResponseEntity<?> getBookByTitleAndAuthor(@RequestParam String book_title, @RequestParam String author) {
@@ -151,6 +163,15 @@ public class LibraryController {
     public ResponseEntity<?> getAllLoansByUser(@RequestParam String email) {
         try{
             return new ResponseEntity<>(commonServices.loansByUserEmail(email), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/loans/loaninfo")
+    @PreAuthorize("hasAnyRole('user','admin')")
+    public ResponseEntity<?> getLoanInfo(@RequestParam long num_loan){
+        try{
+            return new ResponseEntity<>(commonServices.loansByNum(num_loan),HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }

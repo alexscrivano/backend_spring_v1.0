@@ -1,7 +1,9 @@
 package com.example.services;
 
+import com.example.entities.Book;
 import com.example.entities.BookLoan;
 import com.example.entities.User;
+import com.example.repositories.LoanRepo;
 import com.example.repositories.UserRepo;
 import com.example.utils.LoanDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,9 @@ import java.util.Map;
 public class CommonServices {
     @Autowired
     UserRepo userRepo;
+    @Autowired
+    private LoanRepo loanRepo;
+
     public Map<String, List<LoanDTO>> allLoans(){
         Map<String,List<LoanDTO>> prestiti = new HashMap<>();
         for(User user : userRepo.findAll()){
@@ -47,5 +52,13 @@ public class CommonServices {
         }
         prestiti.putIfAbsent(u.getEmail(), list);
         return prestiti;
+    }
+
+    public List<Book> loansByNum(long num){
+        List<Book> books = new ArrayList<>();
+        for(Book b : loanRepo.findByNumLoan(num).getBooks()){
+            books.add(b);
+        }
+        return books;
     }
 }
