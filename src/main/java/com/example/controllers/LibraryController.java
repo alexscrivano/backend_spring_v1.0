@@ -51,9 +51,11 @@ public class LibraryController {
     public ResponseEntity<?> getAllBooks() {
         return new ResponseEntity<>(bookServices.getAllBooks(), HttpStatus.OK);
     }
+
+    //Book search
     @GetMapping("/books/bookSearch")
     @PreAuthorize("hasAnyRole('user','admin')")
-    public ResponseEntity<?> getBookSearchISBN(@RequestParam String searchQuery, @RequestParam String search_type) {
+    public ResponseEntity<?> bookSearch(@RequestParam String searchQuery, @RequestParam String search_type) {
         try{
             List<Book> searchedBooks;
             switch (search_type) {
@@ -66,26 +68,7 @@ public class LibraryController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-//    @GetMapping("/books/bookSearchTitle")
-//    @PreAuthorize("hasAnyRole('user','admin')")
-//    public ResponseEntity<?> getBookSearchTitle(@RequestParam String book_title) {
-//        try{
-//            List<Book> books = bookServices.getBookByTitle(book_title);
-//            return new ResponseEntity<>(books, HttpStatus.OK);
-//        }catch (BookNotInLibraryException e){
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-//        }
-//    }
-//    @GetMapping("/books/bookSearchAuthor")
-//    @PreAuthorize("hasAnyRole('user','admin')")
-//    public ResponseEntity<?> getBookSearchAuthor(@RequestParam String book_author) {
-//        try{
-//            List<Book> books = bookServices.getBookByAuthor(book_author);
-//            return new ResponseEntity<>(books, HttpStatus.OK);
-//        }catch (BookNotInLibraryException e){
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-//        }
-//    }
+
     @GetMapping("/books/findByISBN")
     @PreAuthorize("hasAnyRole('user','admin')")
     public ResponseEntity<?> getBookByISBN(@RequestParam String ISBN) {
@@ -153,7 +136,6 @@ public class LibraryController {
     public ResponseEntity<?> getAllLoans() {
         try{
             return new ResponseEntity<>(commonServices.allLoans(), HttpStatus.OK);
-            //return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(commonServices.allLoans());
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
