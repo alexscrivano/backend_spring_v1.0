@@ -10,14 +10,23 @@ import java.util.List;
 public interface BookRepo extends JpaRepository<Book, Long> {
     List<Book> findByAuthor(String author);
     List<Book> findByTitle(String title);
-    List<Book> findByAuthorAndTitle(String author, String title);
     List<Book> findByGenre(String genre);
     List<Book> findByTitleAndGenre(String title, String genre);
+    List<Book> findByEditor(String editor);
+    List<Book> findByShelf(Shelf shelf);
+    List<Book> findByTitleAndEditor(String title, String editor);
+    List<Book> findByTitleAndAuthor(String title, String author);
 
     Book findByISBN(String ISBN);
-    List<Book> findByShelf(Shelf shelf);
 
     boolean existsByISBN(String ISBN);
+    boolean existsByTitle(String title);
+    boolean existsByAuthor(String author);
+    boolean existsByGenre(String genre);
+    boolean existsByEditor(String editor);
+
+    List<Book> findByTitleContaining(String title);
+    List<Book> findByAuthorContaining(String author);
 
 
 }

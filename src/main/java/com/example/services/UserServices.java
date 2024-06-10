@@ -15,7 +15,6 @@ import jakarta.persistence.LockModeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +37,7 @@ public class UserServices {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class,NoCopiesException.class,UserNotFoundException.class,BookNotInLibraryException.class})
     @Lock(LockModeType.OPTIMISTIC)
     public BookLoan makeALoan(User user, List<Book> books) throws Exception {
-        if(userRepository.existsByEmail(user.getEmail())){
+        if(user != null && userRepository.existsByEmail(user.getEmail())){
             if(books != null){
                 for(Book book : books){
                     if(!bookRepository.existsByISBN(book.getISBN())) throw new BookNotInLibraryException("Libro " + book.getISBN() + " non trovato");
@@ -56,16 +55,7 @@ public class UserServices {
                 b.setDateReturn(returnDate);
                 userRepository.save(user);
                 return loanRepository.save(b);
-            }else throw new Exception("Problema con i libri che hai richiesto");
-        }else throw new UserNotFoundException("Utente: " + user.getEmail() + " non trovato");
+            }throw new Exception("Problema con i libri che hai richiesto");
+        }throw new UserNotFoundException("Utente: " + user.getEmail() + " non trovato");
     }
-
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void annullaPrestito(Long num) throws Exception{
-        if(!loanRepository.existsById(num)) throw new Exception("Prestito " + num + " non trovato");
-        BookLoan b = loanRepository.findById(num).get();
-        if(b.getDateReturn().before(new Date())) throw new Exception("Prestito " + num + " scaduto, non annullabile");
-        loanRepository.delete(b);
-    }
-
 }
