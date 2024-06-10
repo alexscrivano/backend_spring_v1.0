@@ -24,4 +24,10 @@ public class UsersUtils {
         usertosync.setAddress(jwtToken.getClaimAsString("address"));
         return usertosync;
     }
+    public boolean verifyToken(String email){
+        JwtAuthenticationToken token = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwtToken = (Jwt)token.getCredentials();
+        if(email.equals(jwtToken.getClaimAsString("email"))) return true;
+        return false;
+    }
 }
