@@ -55,14 +55,10 @@ public class LibraryController {
     //Book search
     @GetMapping("/books/bookSearch")
     @PreAuthorize("hasAnyRole('user','admin')")
-    public ResponseEntity<?> bookSearch(@RequestParam String searchQuery, @RequestParam String search_type) {
+    public ResponseEntity<?> bookSearch(@RequestParam String searchQuery) {
         try{
-            List<Book> searchedBooks;
-            switch (search_type) {
-                case "ISBN": searchedBooks = List.of(bookRepo.findByISBN(searchQuery));
-                case "Author": searchedBooks = bookRepo.findByAuthorContaining(searchQuery);
-                default: searchedBooks = bookRepo.findByTitleContaining(searchQuery);
-            }
+            List<Book> searchedBooks = bookServices.search(searchQuery);
+            if(searchedBooks.isEmpty()) return new ResponseEntity<>("Nessun Libro trovato",HttpStatus.NOT_FOUND);
             return new ResponseEntity<>(searchedBooks, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

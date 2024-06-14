@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class BooksServices {
@@ -60,5 +60,14 @@ public class BooksServices {
     public List<Book> getByTitleAndGenre(String title, String genre) throws BookNotInLibraryException {
         if(!bookRepository.existsByGenre(genre) || !bookRepository.existsByTitle(title)) throw new BookNotInLibraryException("Libro o genere non trovati!");
         return bookRepository.findByTitleAndGenre(title, genre);
+    }
+    @Transactional(readOnly = true)
+    public List<Book> search(String query) throws BookNotInLibraryException {
+        Set<Book> books = new HashSet<>();
+        if(bookRepository.findByTitleContaining(query) != null) books.addAll(bookRepository.findByTitleContaining(query));
+        if(bookRepository.findByAuthorContaining(query) != null) books.addAll(bookRepository.findByAuthorContaining(query));
+        if(bookRepository.findByGenreContaining(query) != null) books.addAll(bookRepository.findByGenreContaining(query));
+        if(bookRepository.findByEditorContaining(query) != null) books.addAll(bookRepository.findByEditorContaining(query));
+        return List.copyOf(books);
     }
 }
