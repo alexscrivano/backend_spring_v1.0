@@ -25,7 +25,7 @@ class DeleteLoans extends Thread{
                 TimeUnit.DAYS.sleep(1);
                 List<BookLoan> loans = loanRepo.findAll();
                 for(BookLoan loan : loans){
-                    if(loan.getDateReturn().before(new Date())){
+                    if(loan.getDateReturn().before(new Date()) && !loan.isConfirmed()){
                         adminServices.deleteLoan(loan.getNumLoan());
                     }
                 }

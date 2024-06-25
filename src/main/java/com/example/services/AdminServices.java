@@ -61,6 +61,15 @@ public class AdminServices {
             }
             loanRepo.delete(loan);
         }else throw new Exception("Prestito numero " + num_loan + " non trovato");
-
     }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void confirmLoan(Long num_loan) throws Exception {
+        if(loanRepo.existsById(num_loan)){
+            loanRepo.findByNumLoan(num_loan).setConfirmed(true);
+        }else{
+            throw new Exception("Prestito numero " + num_loan + " non trovato");
+        }
+    }
+
 }
