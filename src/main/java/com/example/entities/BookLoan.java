@@ -37,6 +37,11 @@ public class BookLoan {
     @JsonIgnore
     User user;
 
+
+    @Column(name = "confirmed")
+    @JsonIgnore
+    private boolean confirmed;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "books_in_loan",

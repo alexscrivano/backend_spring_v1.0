@@ -156,7 +156,7 @@ public class LibraryController {
     }
 
     /*POST REQUESTS
-    *   - Admin requests (addUser, addBooksOnShelf, addShelf)
+    *   - Admin requests (addUser, addBooksOnShelf, addShelf, confirmLoan)
     *   - User requests (make a loan)
     * */
     @PostMapping("/admin/addUser")
@@ -207,9 +207,19 @@ public class LibraryController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/admin/confirm/{num_loan}")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<?> confirmLoan(@PathVariable Long num_loan) {
+        try{
+            adminServices.confirmLoan(num_loan);
+            return new ResponseEntity<>("Prestito confermato", HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>("Impossibile cancellare prestito, " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     /*DELETE REQUESTS
-        - Admin requests (deleteLoan)
+        - Admin requests (returnLoan)
         - User requests ()
      */
     @DeleteMapping("/admin/returnLoan")

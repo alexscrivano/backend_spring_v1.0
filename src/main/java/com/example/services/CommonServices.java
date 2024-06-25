@@ -59,6 +59,7 @@ public class CommonServices {
         for(Book b : loanRepo.findByNumLoan(num).getBooks()){
             books.add(b);
         }
-        return books;
+        List<Book> booksR = books.reversed();
+        return booksR;
     }
 }
