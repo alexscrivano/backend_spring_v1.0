@@ -9,10 +9,7 @@ import com.example.utils.LoanDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CommonServices {
@@ -59,7 +56,7 @@ public class CommonServices {
         for(Book b : loanRepo.findByNumLoan(num).getBooks()){
             books.add(b);
         }
-        List<Book> booksR = books.reversed();
-        return booksR;
+        Collections.reverse(books);
+        return books;
     }
 }
